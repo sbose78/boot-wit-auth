@@ -30,7 +30,7 @@ objects:
           service: wit
       spec:
         containers:
-        - image: registry.devshift.net/fabric8-services/fabric8-wit:${IMAGE_TAG}
+        - image: docker.io/fabric8/fabric8-wit:${IMAGE_TAG}
           env:
           - name: F8_POSTGRES_HOST
             value: "postgres-wit"
