@@ -30,7 +30,7 @@ objects:
           service: auth
       spec:
         containers:
-        - image: registry.devshift.net/fabric8-services/fabric8-auth:${IMAGE_TAG}
+        - image: docker.io/fabric8/fabric8-auth:latest
           env:
           - name: AUTH_POSTGRES_HOST
             value: "postgres-auth"
