@@ -1,0 +1,105 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: auth
+objects:
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      service: auth
+    name: auth
+  spec:
+    replicas: 1
+    selector:
+      service: auth
+    strategy:
+      resources:
+        limits:
+          memory: 1.5Gi
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          service: auth
+      spec:
+        containers:
+        - image: registry.devshift.net/fabric8-services/fabric8-auth:${IMAGE_TAG}
+          env:
+          - name: AUTH_POSTGRES_HOST
+            value: "postgres-auth"
+          - name: AUTH_DEVELOPER_MODE_ENABLED
+            value: "1"
+          - name: AUTH_POSTGRES_PORT
+            value: "5432"
+          imagePullPolicy: Always
+          name: auth
+          ports:
+          - containerPort: 8089
+            protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status
+              port: 8089
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status
+              port: 8089
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    details:
+      causes:
+      - type: ConfigChange
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: auth
+    labels:
+      service: auth
+  spec:
+    ports:
+      - name: "8089"
+        protocol: TCP
+        port: 80
+        targetPort: 8089
+    selector:
+      service: auth
+    type: ClusterIP
+    sessionAffinity: null
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: auth
+  spec:
+    host: ''
+    to:
+      kind: Service
+      name: auth
+parameters:
+- name: IMAGE_TAG
+  value: latest

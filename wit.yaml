@@ -1,0 +1,107 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: wit
+objects:
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      service: wit
+    name: wit
+  spec:
+    replicas: 1
+    selector:
+      service: wit
+    strategy:
+      resources:
+        limits:
+          memory: 1.5Gi
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          service: wit
+      spec:
+        containers:
+        - image: registry.devshift.net/fabric8-services/fabric8-wit:${IMAGE_TAG}
+          env:
+          - name: F8_POSTGRES_HOST
+            value: "postgres-wit"
+          - name: F8_DEVELOPER_MODE_ENABLED
+            value: "1"
+          - name: F8_POSTGRES_PORT
+            value: "5432"
+          - name: F8_AUTH_URL
+            value: "http://auth"
+          imagePullPolicy: Always
+          name: wit
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    details:
+      causes:
+      - type: ConfigChange
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: wit
+    labels:
+      service: wit
+  spec:
+    ports:
+      - name: "8080"
+        protocol: TCP
+        port: 80
+        targetPort: 8080
+    selector:
+      service: wit
+    type: ClusterIP
+    sessionAffinity: null
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: wit
+  spec:
+    host: ''
+    to:
+      kind: Service
+      name: wit
+parameters:
+- name: IMAGE_TAG
+  value: latest
