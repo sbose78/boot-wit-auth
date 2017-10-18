@@ -9,7 +9,7 @@
 **Output**
 
 ```
---> Deploying template "test-script5/postgres-auth" for "postgres-auth.yaml" to project test-script5
+--> Deploying template "test-project/postgres-auth" for "postgres-auth.yaml" to project test-script5
 
      postgres-auth
      ---------
@@ -21,7 +21,7 @@
 --> Success
     Run 'oc status' to view your app.
 route "postgres-auth" exposed
---> Deploying template "test-script5/auth" for "auth.yaml" to project test-script5
+--> Deploying template "test-project/auth" for "auth.yaml" to project test-script5
 
      * With parameters:
         * IMAGE_TAG=latest
@@ -34,7 +34,7 @@ route "postgres-auth" exposed
     Run 'oc status' to view your app.
 route "auth" deleted
 route "auth" exposed
---> Deploying template "test-script5/postgresql-wit" for "postgres-wit.yaml" to project test-script5
+--> Deploying template "test-project/postgresql-wit" for "postgres-wit.yaml" to project test-script5
 
      postgresql-wit
      ---------
@@ -47,7 +47,7 @@ route "auth" exposed
     Run 'oc status' to view your app.
 error: services "postgresql-wit" not found
 See 'oc expose -h' for help and examples.
---> Deploying template "test-script5/wit" for "wit.yaml" to project test-script5
+--> Deploying template "test-project/wit" for "wit.yaml" to project test-script5
 
      * With parameters:
         * IMAGE_TAG=latest
