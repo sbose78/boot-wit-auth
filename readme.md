@@ -2,8 +2,9 @@
 
 1. Clone the repository locally
 2. Login to any OpenShift/minishift cluster by doing a `oc login ...`
-3. chmod +x boot.sh
-4. ./boot.sh
+3. Create a new OpenShift project `oc new-project my-wit-and-auth`
+4. chmod +x boot.sh
+5. ./boot.sh
 
 
 **Output**
